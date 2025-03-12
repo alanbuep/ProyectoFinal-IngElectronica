@@ -1,4 +1,4 @@
-from sympy import symbols, diff, pi, Abs, N
+from sympy import symbols, diff, pi, Abs, N, sqrt
 
 # Declarar las variables simbólicas
 f39P, f220K, fcolp, C39P, C220K, fmed = symbols('f39P f220K fcolp C39P C220K fmed')
@@ -14,11 +14,11 @@ dC_dC39P = diff(C_colp, C39P)
 dC_dC220K = diff(C_colp, C220K)
 
 # Fórmula de error (ponderación de incertidumbres) para C_colp
-error_C_colp = (
-    Abs(dC_df39P * error_f39P) +
-    Abs(dC_df220K * error_f220K) +
-    Abs(dC_dC39P * error_C39P) +
-    Abs(dC_dC220K * error_C220K)
+error_C_colp = sqrt(
+    (Abs(dC_df39P * error_f39P))**2 +
+    (Abs(dC_df220K * error_f220K))**2 +
+    (Abs(dC_dC39P * error_C39P))**2 +
+    (Abs(dC_dC220K * error_C220K))**2
 )
 
 # Mostrar incertidumbres parciales de C_colp
@@ -47,8 +47,8 @@ valores = {
     error_f220K: 56,
     error_C39P: 0.000472949999999084e-12,
     error_C220K: 0.00174344999999948e-12,
-    fmed: 1578227.8,
-    error_fmed: 29.5
+    fmed: 1566115.6,
+    error_fmed: 29
 }
 
 C_colp_num = N(C_colp.subs(valores))
@@ -80,10 +80,10 @@ dL_dCcolp = diff(L, C_colp_val)
 dL_dC220k = diff(L, C220K)
 
 # Fórmula de error en L
-error_L = (
-    Abs(dL_df220k * error_f220K) +
-    Abs(dL_dCcolp * error_C_colp_val) +
-    Abs(dL_dC220k * error_C220K)
+error_L = sqrt(
+    (Abs(dL_df220k * error_f220K))**2 +
+    (Abs(dL_dCcolp * error_C_colp_val))**2 +
+    (Abs(dL_dC220k * error_C220K))**2
 )
 
 # Mostrar incertidumbres parciales de L
@@ -130,12 +130,12 @@ C_med = 1 / ((2 * pi * fmed)**2 * L_sym)
 dCmed_dfmed = diff(C_med, fmed)
 dCmed_dL = diff(C_med, L_sym)
 
-# error_L = 100e-12
+#error_L = 300e-12
 
 # Fórmula de error (ponderación de incertidumbres) para C_med
-error_C_med = (
-    Abs(dCmed_dfmed * error_fmed) +
-    Abs(dCmed_dL * error_L)
+error_C_med = sqrt(
+    (Abs(dCmed_dfmed * error_fmed))**2 +
+    (Abs(dCmed_dL * error_L))**2
 )
 
 # Mostrar incertidumbres parciales de C_med
@@ -166,4 +166,4 @@ error_C_med_num = N(error_C_med.subs(valores))
 print("\nError total de C_med numérico:", error_C_med_num)
 print("Error total de C_colp numérico:", error_C_colp_num)
 
-print("\nError total de C_med + Error C_colp numérico:", error_C_med_num + error_C_colp_num)
+print("\nError total de C_med + Error C_colp numérico:", sqrt(error_C_med_num**2 + error_C_colp_num**2))
